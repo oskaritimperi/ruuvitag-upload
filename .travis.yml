@@ -15,7 +15,7 @@ env:
 
 install:
   - rustup self update
-  - cargo install cross
+  - cargo install cross --force
 
 script:
   - cross build --target $TARGET --release
