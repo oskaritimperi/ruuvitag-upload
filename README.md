@@ -21,6 +21,8 @@ structure
 where ALIAS will either be the address of the sensor, or
 an alias that you can define.
 
+Parts of the program are inspired by and some parts are copied from [ruuvitag-listener](https://github.com/lautis/ruuvitag-listener).
+
 ## USAGE
 
     ruuvitag-upload [--url=URL] <sensor>...
