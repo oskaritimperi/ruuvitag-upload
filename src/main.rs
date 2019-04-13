@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::process;
-use std::sync::{Arc, Condvar, Mutex};
-use std::time::{Duration, SystemTime, UNIX_EPOCH};
+use std::sync::{mpsc::channel, Arc};
+use std::time::{SystemTime, UNIX_EPOCH};
 
 use rumble;
 use rumble::api::{BDAddr, Central, CentralEvent, Peripheral};
@@ -143,8 +143,6 @@ fn run() -> Result<(), Error> {
         .map(|x| parse_sensor(x))
         .map(|(address, alias)| (address.to_string(), alias.to_string()))
         .collect();
-    let sensors = Arc::new(sensors);
-    let sensors_clone = sensors.clone();
 
     let manager = rumble::bluez::manager::Manager::new()?;
 
@@ -160,69 +158,50 @@ fn run() -> Result<(), Error> {
 
     let central_clone = central.clone();
 
-    let measurements: Arc<Mutex<HashMap<String, Measurement>>> =
-        Arc::new(Mutex::new(HashMap::new()));
-    let measurements_clone = measurements.clone();
-
-    let event = Arc::new((Mutex::new(false), Condvar::new()));
-    let event_clone = event.clone();
+    let (meas_tx, meas_rx) = channel();
 
     central.on_event(Box::new(move |event| {
         if let Some(result) = on_event(&central_clone, event) {
             match result {
                 Ok(measurement) => {
-                    if let Some(alias) = sensors_clone.get(&measurement.address) {
-                        let mut measurements = measurements_clone.lock().unwrap();
-                        measurements.insert(alias.clone(), measurement);
-                        if measurements.len() == sensors_clone.len() {
-                            let &(ref lock, ref cv) = &*event_clone;
-                            let mut done = lock.lock().unwrap();
-                            *done = true;
-                            cv.notify_one();
-                        }
+                    // We are not interested if the measurement wasn't delivered.
+                    match meas_tx.send(measurement) {
+                        Ok(_) => (),
+                        Err(_) => (),
                     }
                 }
+                // Not interested in parsing errors.
                 Err(_) => (),
             }
         }
     }));
 
+    central.start_scan()?;
+
+    let mut measurements = HashMap::new();
+
     loop {
-        central.start_scan()?;
-
-        {
-            let &(ref lock, ref cv) = &*event;
-            let mut signalled = lock.lock().unwrap();
-            while !*signalled {
-                let result = cv.wait_timeout(signalled, Duration::from_secs(60)).unwrap();
-                signalled = result.0;
-                if result.1.timed_out() {
-                    break;
-                }
-            }
-        }
-
-        central.stop_scan()?;
-
-        {
-            let &(ref lock, _) = &*event;
-            let signalled = lock.lock().unwrap();
-            if *signalled {
+        let measurement = meas_rx.recv()?;
+        if let Some(alias) = sensors.get(&measurement.address) {
+            measurements.insert(alias.clone(), measurement);
+            if measurements.len() == sensors.len() {
                 break;
             }
         }
     }
+
+    central.stop_scan()?;
 
     if let Some(url) = args.flag_url {
         let client = reqwest::Client::new();
 
         client
             .post(&url)
-            .json(&*measurements.lock().unwrap())
+            .json(&measurements)
             .send()?
             .error_for_status()?;
     } else {
-        println!("{}", serde_json::to_string(&*measurements.lock().unwrap()).unwrap());
+        println!("{}", serde_json::to_string(&measurements).unwrap());
     }
 
     Ok(())
