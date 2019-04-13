@@ -49,7 +49,7 @@ impl Measurement {
     }
 }
 
-const USAGE: &'static str = "
+const USAGE: &str = "
 ruuvitag-upload
 
 A tool for collecting a set of ruuvitag sensor measurements
@@ -159,16 +159,8 @@ fn run() -> Result<(), Error> {
 
     central.on_event(Box::new(move |event| {
         if let Some(result) = on_event(&central_clone, event) {
-            match result {
-                Ok(measurement) => {
-                    // We are not interested if the measurement wasn't delivered.
-                    match meas_tx.send(measurement) {
-                        Ok(_) => (),
-                        Err(_) => (),
-                    }
-                }
-                // Not interested in parsing errors.
-                Err(_) => (),
+            if let Ok(measurement) = result {
+                let _ = meas_tx.send(measurement);
             }
         }
     }));
