@@ -7,13 +7,13 @@ The measurements are formatted as JSON with the following
 structure
 
     {
-        \"<ALIAS>\": {
-            \"address\": \"XX:XX:XX:XX:XX:XX\",
-            \"timestamp\": <seconds since unix epoch>,
-            \"humidity\": <0-100%>,
-            \"pressure\": <kPa>,
-            \"temperature\": <Celcius>,
-            \"battery_potential\": <volts>
+        "<ALIAS>": {
+            "address": "XX:XX:XX:XX:XX:XX",
+            "timestamp": <seconds since unix epoch>,
+            "humidity": <0-100%>,
+            "pressure": <kPa>,
+            "temperature": <Celcius>,
+            "battery_potential": <volts>
         },
         ...
     }
