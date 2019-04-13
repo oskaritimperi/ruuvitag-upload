@@ -3,6 +3,13 @@ name = "ruuvitag-upload"
 version = "0.1.0"
 authors = ["Oskari Timperi <oskari.timperi@iki.fi>"]
 edition = "2018"
+license = "GPL-3.0-or-later"
+description = "A tool for collecting a set of ruuvitag sensor measurements and uploading them for further processing."
+readme = "README.md"
+homepage = "https://github.com/oswjk/ruuvitag-upload"
+repository = "https://github.com/oswjk/ruuvitag-upload"
+keywords = ["command", "ruuvi", "ruuvitag"]
+categories = ["command-line-utilities"]
 
 [dependencies]
 rumble = { git = "https://github.com/lautis/rumble", tag = "v0.3.0.ruuvitag-listener.1" }
