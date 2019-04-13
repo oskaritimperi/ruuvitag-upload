@@ -1,6 +1,6 @@
 [package]
 name = "ruuvitag-upload"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Oskari Timperi <oskari.timperi@iki.fi>"]
 edition = "2018"
 license = "GPL-3.0-or-later"
@@ -12,7 +12,7 @@ keywords = ["command", "ruuvi", "ruuvitag"]
 categories = ["command-line-utilities"]
 
 [dependencies]
-rumble = { git = "https://github.com/lautis/rumble", tag = "v0.3.0.ruuvitag-listener.1" }
+rumble = "0.3"
 ruuvi-sensor-protocol = "0.2"
 docopt = "1.0.2"
 serde_derive = "1.0"

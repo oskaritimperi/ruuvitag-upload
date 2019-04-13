@@ -153,9 +153,6 @@ fn run() -> Result<(), Error> {
 
     let central = Arc::new(adapter.connect()?);
 
-    central.active(false);
-    central.filter_duplicates(false);
-
     let central_clone = central.clone();
 
     let (meas_tx, meas_rx) = channel();
