@@ -1,5 +1,7 @@
 dist: xenial
+
 language: rust
+
 services:
   - docker
 
@@ -19,3 +21,16 @@ install:
 
 script:
   - cross build --target $TARGET --release
+
+before_deploy:
+  - sh ci/before_deploy.sh
+
+deploy:
+  provider: releases
+  skip_cleanup: true
+  api_key:
+    secure: aYkH0BNR34K3G/ITpz+FvqGrIC9wXJc8vcdtHWUTZ/p0QWL4MzjXs/rXcfC15vV2Zx1JTp71H8zqGQ7vvR3l+DbO1Yg8kIAt/26tMhZ1Q3f1NJ718AqXFZnW/vnNP12bnrhDNvPJzEexkEHrm2Q8DsUu03GVoAoVNnmnaMxTKLMPZDYeHUqqTrHUsRjMvl1kk2KeVO4vjpQ3kdmbN4SZh518XP8W2dY+Bm8BcVR/aIpMxy6ILaQKWSMfI/CH/DLOjdM6SACzgrnBkmdQx/6L2iYPWqbk5quIaOWr6NWnh6IZG9Zf6Ty8EGmuEy2nQu/zCqnKmY6BcSWsT1XTjOY3TOxgS+fM5/H3e3b/ttGmRh4z3sNwtDTZJZS0sjZ9uAf6UAJYcAzdMKW3dJOj9qsVsE7P8VVD0EhjMrpGAd/AoP6RsiemNpHkLN/yfb04EmFLoHc1IzluE9jkawrpvsMEV5ayGYzJGNEDyUW86elrNN2Ej3j9Bb/LYrOjA8sCA/Q8lT81rCbBx4/mU0HTJtU0sRK9ZcaUDtj606uU9U9ua/O2dZ7UfmuibWHNjWvuaZRlhHfCzZmk0t4s8o5HgaFnGqw0PoFJSf1d9PP/Pt2A36W3MpJw9qXZPBv7PCMZ75B6eSZWXBmSb72GwhvaBE/hntQYXh8GPxuHJc1xLqNDfRs=
+  file: ruuvitag-upload-${TRAVIS_TAG}-${TARGET}.tar.gz
+  on:
+    repo: oswjk/ruuvitag-upload
+    tags: true
