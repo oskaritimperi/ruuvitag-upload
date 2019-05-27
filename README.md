@@ -21,6 +21,15 @@ structure
 where ALIAS will either be the address of the sensor, or
 an alias that you can define.
 
+If uploading measurements fails, the measurements are
+cached. The cached measurements are uploaded the next time
+ruuvitag-upload is called. Cached measurements are uploaded
+first, from oldest to newest. If uploading cached measurements
+fails, the current measurements are again cached for next time.
+This way, you won't lose any measurements. When a cached
+measurement is succesfully uploaded, the cache entry will be
+removed.
+
 Parts of the program are inspired by and some parts are copied from [ruuvitag-listener](https://github.com/lautis/ruuvitag-listener).
 
 ## USAGE

@@ -1223,7 +1223,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "ruuvitag-upload"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "assert_fs 0.11.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "directories 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
